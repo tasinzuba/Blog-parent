@@ -1,6 +1,30 @@
+// src/pages/admin/AdminDashboard.jsx (MUI দিয়ে নতুন ডিজাইন)
+
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { logout } from '../../utils/auth';
+
+// --- MUI কম্পোনেন্টগুলো ইম্পোর্ট করা হচ্ছে ---
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
+import LogoutIcon from '@mui/icons-material/Logout';
+import {
+    Box,
+    Button,
+    Container,
+    IconButton,
+    Paper,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    Typography
+} from '@mui/material';
+// -----------------------------------------
 
 function AdminDashboard() {
     const [posts, setPosts] = useState([]);
@@ -16,9 +40,13 @@ function AdminDashboard() {
     };
 
     useEffect(() => {
-        // টোকেন চেক করার লজিক পরে যোগ করা হবে
-        fetchPosts();
-    }, []);
+        const token = localStorage.getItem('token');
+        if (!token) {
+            navigate('/admin/login');
+        } else {
+            fetchPosts();
+        }
+    }, [navigate]);
 
     const deletePost = async (id) => {
         if (window.confirm('Are you sure you want to delete this post?')) {
@@ -36,42 +64,73 @@ function AdminDashboard() {
     };
 
     const handleLogout = () => {
-        localStorage.removeItem('token');
+        logout(); // utils/auth.js থেকে আসা ফাংশন
         navigate('/admin/login');
     };
 
     return (
-        <div className="admin-dashboard container">
-            <div className="page-header">
-                <h1>Admin Dashboard</h1>
-                <div>
-                    <Link to="/admin/create-post" className="btn btn-primary">Create New Post</Link>
-                    <button onClick={handleLogout} className="btn btn-danger">Logout</button>
-                </div>
-            </div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Title</th>
-                        <th>Created At</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {posts.map(post => (
-                        <tr key={post.id}>
-                            <td>{post.title}</td>
-                            <td>{new Date(post.createdAt).toLocaleDateString()}</td>
-                            <td>
-                                <Link to={`/post/${post.id}`} className="btn btn-secondary">View</Link>
-                                <Link to={`/admin/edit-post/${post.id}`} className="btn btn-secondary">Edit</Link>
-                                <button onClick={() => deletePost(post.id)} className="btn btn-danger">Delete</button>
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
-        </div>
+        <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+            {/* পেজের হেডার অংশ */}
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
+                <Typography variant="h4" component="h1">
+                    Admin Dashboard
+                </Typography>
+                <Box>
+                    <Button 
+                        variant="contained" 
+                        component={Link} 
+                        to="/admin/create-post"
+                        startIcon={<AddCircleOutlineIcon />}
+                        sx={{ mr: 2 }}
+                    >
+                        Create New Post
+                    </Button>
+                    <Button 
+                        variant="outlined" 
+                        color="error" 
+                        onClick={handleLogout}
+                        startIcon={<LogoutIcon />}
+                    >
+                        Logout
+                    </Button>
+                </Box>
+            </Box>
+
+            {/* পোস্টের তালিকা দেখানোর জন্য টেবিল */}
+            <TableContainer component={Paper}>
+                <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                    <TableHead>
+                        <TableRow>
+                            <TableCell sx={{ fontWeight: 'bold' }}>Title</TableCell>
+                            <TableCell sx={{ fontWeight: 'bold' }} align="right">Created At</TableCell>
+                            <TableCell sx={{ fontWeight: 'bold' }} align="center">Actions</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {posts.map((post) => (
+                            <TableRow
+                                key={post.id}
+                                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                            >
+                                <TableCell component="th" scope="row">
+                                    {post.title}
+                                </TableCell>
+                                <TableCell align="right">{new Date(post.createdAt).toLocaleDateString()}</TableCell>
+                                <TableCell align="center">
+                                    {/* এডিট এবং ডিলেট করার জন্য আইকন বাটন */}
+                                    <IconButton component={Link} to={`/admin/edit-post/${post.id}`} color="primary">
+                                        <EditIcon />
+                                    </IconButton>
+                                    <IconButton onClick={() => deletePost(post.id)} color="error">
+                                        <DeleteIcon />
+                                    </IconButton>
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </TableContainer>
+        </Container>
     );
 }
 

@@ -1,8 +1,15 @@
+// src/pages/admin/CreatePost.jsx (MUI দিয়ে নতুন ডিজাইন)
+
 import axios from 'axios';
 import { useState } from 'react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { useNavigate } from 'react-router-dom';
+
+// MUI কম্পোনেন্ট ইম্পোর্ট
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import SendIcon from '@mui/icons-material/Send';
+import { Box, Button, Container, Paper, TextField, Typography } from '@mui/material';
 
 function CreatePost() {
     const [title, setTitle] = useState('');
@@ -35,15 +42,65 @@ function CreatePost() {
     };
 
     return (
-        <div className="form-container">
-            <h1>Create a New Post</h1>
-            <form onSubmit={handleSubmit}>
-                <div className="form-group"><label>Title</label><input type="text" value={title} onChange={(e) => setTitle(e.target.value)} required /></div>
-                <div className="form-group"><label>Feature Image</label><input type="file" onChange={(e) => setFile(e.target.files[0])} /></div>
-                <div className="form-group"><label>Content</label><ReactQuill theme="snow" value={content} onChange={setContent} /></div>
-                <button type="submit" className="btn btn-primary">Publish</button>
-            </form>
-        </div>
+        <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
+            <Paper elevation={3} sx={{ p: 4 }}>
+                <Typography variant="h4" component="h1" gutterBottom>
+                    Create a New Post
+                </Typography>
+                <Box component="form" onSubmit={handleSubmit}>
+                    <TextField
+                        label="Post Title"
+                        variant="outlined"
+                        fullWidth
+                        required
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                        sx={{ mb: 3 }}
+                    />
+
+                    <Button
+                        variant="outlined"
+                        component="label"
+                        fullWidth
+                        sx={{ mb: 3 }}
+                    >
+                        Upload Feature Image
+                        <input
+                            type="file"
+                            hidden
+                            onChange={(e) => setFile(e.target.files[0])}
+                        />
+                    </Button>
+                    {file && <Typography sx={{ mb: 3 }}>Selected file: {file.name}</Typography>}
+
+                    <Typography variant="h6" sx={{ mb: 1 }}>Content</Typography>
+                    <ReactQuill
+                        theme="snow"
+                        value={content}
+                        onChange={setContent}
+                        style={{ marginBottom: '24px' }}
+                    />
+
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 4 }}>
+                         <Button
+                            variant="outlined"
+                            color="secondary"
+                            startIcon={<ArrowBackIcon />}
+                            onClick={() => navigate('/admin/dashboard')}
+                        >
+                            Back to Dashboard
+                        </Button>
+                        <Button
+                            type="submit"
+                            variant="contained"
+                            endIcon={<SendIcon />}
+                        >
+                            Publish Post
+                        </Button>
+                    </Box>
+                </Box>
+            </Paper>
+        </Container>
     );
 }
 

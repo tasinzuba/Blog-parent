@@ -1,38 +1,55 @@
-// src/App.jsx (CssBaseline সহ আপডেটেড)
-
+import { CssBaseline } from '@mui/material';
 import { Route, Routes } from 'react-router-dom';
 
-// MUI থেকে CssBaseline ইম্পোর্ট করুন
-import { CssBaseline } from '@mui/material';
+// --- লেআউট কম্পোনেন্ট ইম্পোর্ট ---
+import Header from './components/Header';
+import ProtectedRoute from './components/ProtectedRoute'; // আমাদের সুরক্ষিত রুটের 'গার্ড'
 
-// কম্পোনেন্ট ও পেজ ইম্পোর্ট
+// --- পাবলিক পেজ ইম্পোর্ট ---
+import HomePage from './pages/public/HomePage';
+import PostPage from './pages/public/PostPage';
+import SearchResultsPage from './pages/public/SearchResultsPage';
+
+// --- অ্যাডমিন পেজ ইম্পোর্ট ---
 import AdminDashboard from './pages/admin/AdminDashboard';
 import CreatePost from './pages/admin/CreatePost';
 import EditPost from './pages/admin/EditPost';
 import LoginPage from './pages/admin/LoginPage';
-import HomePage from './pages/public/HomePage';
-import PostPage from './pages/public/PostPage';
 
 function App() {
   return (
     <>
-      {/* এই কম্পোনেন্টটি এখানে যোগ করতে হবে */}
+      {/* MUI-এর জন্য বেসলাইন স্টাইল এবং ফন্ট ঠিক রাখে */}
       <CssBaseline />
       
-      {/* আমাদের হেডার কম্পোনেন্টটি পরে এখানে আসবে */}
-      {/* <Header /> */}
-
+      {/* হেডার, যা সব পেজে দেখা যাবে */}
+      <Header />
+      
+      {/* মূল কন্টেন্ট এখানে রেন্ডার হবে */}
       <main>
         <Routes>
-          {/* --- পাবলিক রুট --- */}
+          {/* ======================================== */}
+          {/* ======== পাবলিক রুট (সবার জন্য) ======== */}
+          {/* ======================================== */}
           <Route path="/" element={<HomePage />} />
           <Route path="/post/:id" element={<PostPage />} />
-
-          {/* --- অ্যাডমিন রুট --- */}
+          <Route path="/search" element={<SearchResultsPage />} />
           <Route path="/admin/login" element={<LoginPage />} />
-          <Route path="/admin/dashboard" element={<AdminDashboard />} />
-          <Route path="/admin/create-post" element={<CreatePost />} />
-          <Route path="/admin/edit-post/:id" element={<EditPost />} />
+
+
+          {/* ========================================================= */}
+          {/* ======== সুরক্ষিত অ্যাডমিন রুট (শুধু লগইন করা ইউজার) ======== */}
+          {/* ========================================================= */}
+          {/* এই Route ট্যাগটি একটি 'গেটকিপার' হিসেবে কাজ করছে। 
+              এর ভেতরের সব রুটে প্রবেশের আগে ProtectedRoute চেক করবে ইউজার লগইন করা আছে কিনা।
+              লগইন করা না থাকলে, /admin/login পেজে পাঠিয়ে দেবে।
+          */}
+          <Route element={<ProtectedRoute />}>
+            <Route path="/admin/dashboard" element={<AdminDashboard />} />
+            <Route path="/admin/create-post" element={<CreatePost />} />
+            <Route path="/admin/edit-post/:id" element={<EditPost />} />
+          </Route>
+
         </Routes>
       </main>
     </>

@@ -1,8 +1,14 @@
+// src/pages/admin/EditPost.jsx (MUI দিয়ে নতুন ডিজাইন)
+
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { useNavigate, useParams } from 'react-router-dom';
+
+// MUI কম্পোনেন্ট ইম্পোর্ট
+import SendIcon from '@mui/icons-material/Send';
+import { Box, Button, Container, Paper, TextField, Typography } from '@mui/material';
 
 function EditPost() {
     const [title, setTitle] = useState('');
@@ -48,19 +54,41 @@ function EditPost() {
     };
 
     return (
-        <div className="form-container">
-            <h1>Edit Post</h1>
-            <form onSubmit={handleSubmit}>
-                <div className="form-group"><label>Title</label><input type="text" value={title} onChange={(e) => setTitle(e.target.value)} required /></div>
-                <div className="form-group">
-                    <label>Feature Image</label>
-                    {existingImage && <img src={`http://localhost:5000${existingImage}`} alt="Current" style={{ width: '200px', marginBottom: '10px' }} />}
-                    <input type="file" onChange={(e) => setFile(e.target.files[0])} />
-                </div>
-                <div className="form-group"><label>Content</label><ReactQuill theme="snow" value={content} onChange={setContent} /></div>
-                <button type="submit" className="btn btn-primary">Update Post</button>
-            </form>
-        </div>
+        <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
+            <Paper elevation={3} sx={{ p: 4 }}>
+                <Typography variant="h4" component="h1" gutterBottom>
+                    Edit Post
+                </Typography>
+                <Box component="form" onSubmit={handleSubmit}>
+                    <TextField
+                        label="Post Title"
+                        variant="outlined"
+                        fullWidth
+                        required
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                        sx={{ mb: 3 }}
+                    />
+                    <Box sx={{ mb: 3 }}>
+                        <Typography>Current Feature Image:</Typography>
+                        {existingImage ? 
+                            <img src={`http://localhost:5000${existingImage}`} alt="Current" style={{ width: '200px', marginTop: '10px' }} />
+                            : <Typography variant='body2'>No feature image.</Typography>
+                        }
+                    </Box>
+                    <Button variant="outlined" component="label" fullWidth sx={{ mb: 3 }}>
+                        Upload New Image (Optional)
+                        <input type="file" hidden onChange={(e) => setFile(e.target.files[0])} />
+                    </Button>
+                    {file && <Typography sx={{ mb: 3 }}>New file selected: {file.name}</Typography>}
+                    <Typography variant="h6" sx={{ mb: 1 }}>Content</Typography>
+                    <ReactQuill theme="snow" value={content} onChange={setContent} style={{ marginBottom: '24px' }}/>
+                    <Button type="submit" variant="contained" endIcon={<SendIcon />} sx={{ mt: 4 }}>
+                        Update Post
+                    </Button>
+                </Box>
+            </Paper>
+        </Container>
     );
 }
 
